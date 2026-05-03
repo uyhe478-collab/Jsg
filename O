@@ -1,0 +1,70 @@
+-- [[ สคริปต์ส่องคำตอบ + ปุ่มเปิดปิดโดย Gemini ]] --
+
+local player = game.Players.LocalPlayer
+local pgui = player:WaitForChild("PlayerGui")
+
+-- 1. สร้างหน้าจอ GUI
+local sgui = Instance.new("ScreenGui")
+sgui.Name = "SpyGui"
+sgui.ResetOnSpawn = false
+sgui.Parent = pgui
+
+-- 2. สร้างปุ่มเปิด/ปิด (สไตล์ที่น้องชอบ)
+local button = Instance.new("TextButton")
+button.Size = UDim2.new(0, 140, 0, 45)
+button.Position = UDim2.new(0.85, -140, 0.4, 0) -- อยู่แถวๆ กลางจอฝั่งขวา
+button.BackgroundColor3 = Color3.fromRGB(0, 200, 0) -- เริ่มต้นสีเขียว 🟢
+button.Text = "เปิดระบบส่อง"
+button.TextColor3 = Color3.fromRGB(255, 255, 255)
+button.Font = Enum.Font.SourceSansBold
+button.TextSize = 18
+button.Parent = sgui
+
+local corner = Instance.new("UICorner")
+corner.CornerRadius = UDim.new(0, 12)
+corner.Parent = button
+
+-- 3. ระบบสแกนหาตัวหนังสือคนอื่น
+local active = false
+
+local function revealText()
+    -- สแกนหา TextLabel ในแมพที่อาจจะเป็นของคนอื่น
+    for _, v in pairs(game.Workspace:GetDescendants()) do
+        if v:IsA("TextLabel") or v:IsA("TextBox") then
+            -- ถ้าเจอตัวหนังสือที่ถูกซ่อนไว้ หรือเป็นของฝ่ายตรงข้าม
+            if v.Transparency == 1 or v.Visible == false then
+                v.Visible = true
+                v.Transparency = 0
+                v.TextColor3 = Color3.fromRGB(255, 0, 0) -- ไฮไลท์สีแดงให้เห็นชัดๆ
+            end
+        end
+    end
+end
+
+-- 4. ระบบกดปุ่ม
+button.Activated:Connect(function()
+    active = not active
+    
+    if active then
+        button.Text = "กำลังส่อง... 🔴"
+        button.BackgroundColor3 = Color3.fromRGB(200, 0, 0) -- เปลี่ยนเป็นสีแดงตอนเปิด
+        
+        -- วนลูปสแกนทุกๆ 1 วินาที
+        spawn(function()
+            while active do
+                revealText()
+                task.wait(1)
+            end
+        end)
+        
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "ระบบทำงาน!";
+            Text = "ลองมองดูที่กระดานฝั่งตรงข้ามนะครับ";
+            Duration = 3;
+        })
+    else
+        button.Text = "เปิดระบบส่อง"
+        button.BackgroundColor3 = Color3.fromRGB(0, 200, 0) -- กลับเป็นสีเขียว 🟢
+        active = false
+    end
+end)
