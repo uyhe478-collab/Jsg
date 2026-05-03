@@ -1,0 +1,27 @@
+-- [[ สคริปต์เปิดเผยคำตอบ (ใช้สำหรับรันใน Ninja Pro) ]] --
+
+-- ค้นหาโฟลเดอร์ที่เก็บหน้าจอ UI ของผู้เล่นทุกคน
+local playerGui = game:GetService("Players").LocalPlayer.PlayerGui
+
+-- ฟังก์ชันสำหรับค้นหาและแสดงคำตอบ
+function revealAnswers()
+    print("💡 กำลังค้นหาประเทศที่ซ่อนอยู่...")
+    
+    -- หาUIที่ดูเหมือนจะเก็บข้อมูลประเทศ (ตัวอย่างชื่อ Gui)
+    for _, gui in pairs(playerGui:GetDescendants()) do
+        if gui:IsA("TextLabel") and (string.find(string.lower(gui.Name), "country") or string.find(string.lower(gui.Name), "answer")) then
+            -- ถ้าเจอ ก็ทำให้มันมองเห็นได้ (Visible = true) หรือพิมพ์ออกมา
+            print("💡 ตรวจพบประเทศ: " .. gui.Text)
+            
+            -- แจ้งเตือนบนหน้าจอคุณ
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "เจอประเทศแล้ว!";
+                Text = "ฝ่ายตรงข้ามอาจจะเลือก: " .. gui.Text;
+                Duration = 5;
+            })
+        end
+    end
+end
+
+-- รันฟังก์ชัน
+revealAnswers()
