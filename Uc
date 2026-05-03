@@ -1,0 +1,15 @@
+-- [[ สคริปต์ดึง Log ข้อความในเกม ]] --
+local LogService = game:GetService("LogService")
+
+-- สร้างแจ้งเตือนเมื่อมีข้อความใหม่ในระบบ (เผื่อคำตอบหลุดออกมา)
+LogService.MessageOut:Connect(function(Message, Type)
+    if string.find(string.lower(Message), "answer") or string.find(string.lower(Message), "word") then
+        print("💡 ตรวจพบคำที่น่าสงสัย: " .. Message)
+        -- โชว์บนหน้าจอผู้เล่น
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "ระบบตรวจพบคำ!";
+            Text = Message;
+            Duration = 5;
+        })
+    end
+end)
